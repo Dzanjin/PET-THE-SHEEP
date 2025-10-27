@@ -108,6 +108,15 @@
 
     .toast{ position:fixed; inset:auto 0 18px 0; display:flex; justify-content:center; pointer-events:none; }
     .toast > div{ background:rgba(17,24,39,.9); border:1px solid rgba(255,255,255,.1); color:var(--fg); padding:10px 14px; border-radius:12px; font-size:13px; }
+  
+  
+    /* ESM button “on” look */
+button.is-on {
+  outline: 2px solid rgba(255,255,255,0.35);
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.12) inset;
+}
+
+  
   </style>
 </head>
 <body>
@@ -118,6 +127,7 @@
         <div class="buttons">
           <button id="muteBtn" aria-pressed="false" title="Sound on/off">🔈</button>
           <button id="resetBtn" title="Reset progress">↺</button>
+          <button id="esmBtn" aria-pressed="false" title="Emotional Support Mode">🫶</button>
         </div>
       </header>
 
@@ -153,13 +163,17 @@
   const bestEl= document.getElementById('best');
   const muteBtn = document.getElementById('muteBtn');
   const resetBtn= document.getElementById('resetBtn');
+  const esmBtn = document.getElementById('esmBtn');
   const toast = document.getElementById('toast');
 
   // Persistent state
   let best = parseInt(localStorage.getItem('sheep_best')||'0',10);
   let totalPets = parseInt(localStorage.getItem('sheep_total')||'0',10);
   let muted = localStorage.getItem('sheep_muted')==='1';
+  let esm = localStorage.getItem('sheep_esm') === '1';
   bestEl.textContent = best; petsEl.textContent = totalPets; updateMuteIcon();
+  applyESM();
+
 
   // Petting mechanics
   let progress = 0; // 0..100 visual meter
@@ -300,6 +314,13 @@ function spawnHeart(x, y){
     return { x:ev.clientX, y:ev.clientY };
   }
 
+  function applyESM(){
+  document.body.classList.toggle('esm', esm);
+  esmBtn.classList.toggle('is-on', esm);
+  esmBtn.setAttribute('aria-pressed', esm ? 'true' : 'false');
+}
+
+
   // Events (note passive:false so preventDefault works on iOS)
   play.addEventListener('touchstart', onStart, { passive:false });
   play.addEventListener('touchmove',  onMove,  { passive:false });
@@ -318,6 +339,11 @@ function spawnHeart(x, y){
     localStorage.removeItem('sheep_total'); localStorage.removeItem('sheep_best');
     showToast('Reset!');
   });
+  esmBtn.addEventListener('click', ()=>{
+  esm = !esm;
+  localStorage.setItem('sheep_esm', esm ? '1' : '0');
+  applyESM();
+});
 })();
 </script>
 </body>
