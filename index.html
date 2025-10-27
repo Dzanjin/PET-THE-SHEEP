@@ -180,7 +180,7 @@ button.is-on {
   let petting = false;
   let lastX = 0, lastY = 0;
   let distanceOnSheep = 0; // distance since last reward
-  const PET_DISTANCE_FOR_REWARD = 250; // px of movement to spawn particles/reward tick
+  const PET_DISTANCE_FOR_REWARD = 120; // px of movement to spawn particles/reward tick
 
   function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
   function vibrate(ms){ if (navigator.vibrate) try{ navigator.vibrate(ms); }catch(e){} }
@@ -348,3 +348,4 @@ function spawnHeart(x, y){
 </script>
 </body>
 </html>
+
