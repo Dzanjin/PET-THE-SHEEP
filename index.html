@@ -2,115 +2,143 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <!-- Match the top bar to background -->
-<meta name="theme-color" content="#0f172a" />
-<meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" viewport-fit=cover />
+  <!-- iPhone fullscreen + dark status bar + safe areas -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <title>Pet the Sheep</title>
+
   <style>
     :root{
       --bg1:#0f172a; /* slate-900 */
       --bg2:#1e293b; /* slate-800 */
-      --fg:#e2e8f0; /* slate-200 */
-      --accent:#a7f3d0; /* mint */
-      --accent2:#fde68a; /* gold */
-      --heart:#fca5a5; /* soft red */
+      --fg:#e2e8f0;  /* slate-200 */
+      --accent:#a7f3d0;
+      --accent2:#fde68a;
+      --heart:#fca5a5;
     }
-    *{box-sizing:border-box}
-    html,body{height:100%;margin:0;font-family:system-ui,Segoe UI,Roboto,Inter,ui-sans-serif}
-    body{
-      background: radial-gradient(1200px 800px at 50% 0%, var(--bg2), var(--bg1));
+
+    /* paint behind status bar on iOS and fill screen */
+    html, body { background:#0f172a; height:100%; margin:0; }
+    body {
       color:var(--fg);
-      display:flex;align-items:center;justify-content:center;
-      touch-action:manipulation; /* allow smooth touch */
-      -webkit-user-select:none;user-select:none;
+      display:flex; align-items:center; justify-content:center;
+      padding-top: env(safe-area-inset-top);
+      padding-right: env(safe-area-inset-right);
+      padding-bottom: env(safe-area-inset-bottom);
+      padding-left: env(safe-area-inset-left);
+      -webkit-user-select:none; user-select:none;
+      touch-action: manipulation;
+      background: radial-gradient(1200px 800px at 50% 0%, var(--bg2), var(--bg1));
+      font-family: system-ui, Segoe UI, Roboto, Inter, ui-sans-serif;
     }
-    .app{width:min(520px,100%);padding:16px}
+
+    .app{ width:min(520px,100%); padding:16px; }
     .card{
       background:rgba(255,255,255,0.06);
       border:1px solid rgba(255,255,255,0.08);
-      border-radius:20px;box-shadow:0 10px 30px rgba(0,0,0,0.35);
-      overflow:hidden;position:relative
+      border-radius:20px; box-shadow:0 10px 30px rgba(0,0,0,.35);
+      overflow:hidden; position:relative;
     }
-    header{padding:16px 18px 6px;display:flex;justify-content:space-between;align-items:center}
-    h1{font-size:20px;margin:0;letter-spacing:0.3px}
-    .meter{height:10px;background:rgba(255,255,255,0.08);border-radius:10px;overflow:hidden}
-    .bar{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width 120ms ease}
-    .play{
-      position:relative;display:flex;align-items:center;justify-content:center;
-      min-height:360px;
-      padding:10px
-    }
-    .sheep{font-size:250px;line-height:1;filter:drop-shadow(0 6px 18px rgba(0,0,0,0.45));
-      transition:transform 90ms ease}
-    .hint{position:absolute;bottom:12px;left:0;right:0;text-align:center;font-size:14px;opacity:0.75}
-    .hud{display:flex;gap:10px;padding:12px 16px;border-top:1px solid rgba(255,255,255,0.08);align-items:center;justify-content:space-between}
-    .pill{padding:8px 12px;border-radius:999px;background:rgba(255,255,255,0.08);font-size:13px}
-    .star{position:absolute;font-size:26px;pointer-events:none;opacity:0;animation:pop 900ms ease forwards}
-    @keyframes pop{0%{transform:translateY(0) scale(0.6);opacity:0} 10%{opacity:1} 100%{transform:translateY(-70px) scale(1.1);opacity:0}}
-    .heart{position:absolute;font-size:22px;color:var(--heart);opacity:0;animation:float 1100ms ease forwards}
-    @keyframes float{0%{transform:translateY(0) scale(0.6);opacity:0} 20%{opacity:1} 100%{transform:translateY(-60px) scale(1.2);opacity:0}}
-    .buttons{display:flex;gap:10px}
-    button{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:var(--fg);padding:8px 12px;border-radius:10px;font-size:14px}
-    button:active{transform:translateY(1px)}
-    .toast{position:fixed;inset:auto 0 18px 0;display:flex;justify-content:center;pointer-events:none}
-    .toast > div{background:rgba(17,24,39,0.9);border:1px solid rgba(255,255,255,0.1);color:var(--fg);padding:10px 14px;border-radius:12px;font-size:13px}
-    
-    html, body {
-  background-color: #0f172a; /* same dark background */
-  height: 100%;
-}
 
-body {
-  padding-top: env(safe-area-inset-top);
-  padding-right: env(safe-area-inset-right);
-  padding-bottom: env(safe-area-inset-bottom);
-  padding-left: env(safe-area-inset-left);
-}
+    header{ padding:16px 18px 6px; display:flex; justify-content:space-between; align-items:center; }
+    h1{ margin:0; font-size:20px; letter-spacing:.3px; }
+    .buttons{ display:flex; gap:10px; }
+    button{
+      background:rgba(255,255,255,0.08);
+      border:1px solid rgba(255,255,255,0.12);
+      color:var(--fg); padding:8px 12px; border-radius:10px; font-size:14px;
+    }
+    button:active{ transform:translateY(1px); }
+
+    .meter{ height:10px; background:rgba(255,255,255,0.08); border-radius:10px; overflow:hidden; }
+    .bar{ height:100%; width:0%; background:linear-gradient(90deg,var(--accent),var(--accent2)); transition:width 120ms ease; }
+
+    .play{
+      position:relative; display:flex; align-items:center; justify-content:center;
+      min-height:520px; padding:10px;
+      /* IMPORTANT for touch tracking on iOS */
+      touch-action: none;
+      overflow:hidden; /* keep particles inside card */
+    }
+
+    .sheep{
+      /* Make the emoji bigger; change this to your taste */
+      font-size:250px; line-height:1;
+      filter:drop-shadow(0 6px 18px rgba(0,0,0,.45));
+      transition:transform 90ms ease;
+    }
+
+    .hint{ position:absolute; bottom:12px; left:0; right:0; text-align:center; font-size:14px; opacity:.75; }
+
+    .hud{
+      display:flex; gap:10px; padding:12px 16px;
+      border-top:1px solid rgba(255,255,255,0.08); align-items:center; justify-content:space-between;
+    }
+    .pill{ padding:8px 12px; border-radius:999px; background:rgba(255,255,255,0.08); font-size:13px; }
+
+    .star{ position:absolute; font-size:26px; pointer-events:none; opacity:0; z-index:10; animation:pop 900ms ease forwards; }
+    .heart{ position:absolute; font-size:22px; color:var(--heart); pointer-events:none; opacity:0; z-index:10; animation:float 1100ms ease forwards; }
+
+    @keyframes pop{
+      0%{ transform:translateY(0) scale(.6); opacity:0; }
+      10%{ opacity:1; }
+      100%{ transform:translateY(-70px) scale(1.1); opacity:0; }
+    }
+    @keyframes float{
+      0%{ transform:translateY(0) scale(.6); opacity:0; }
+      20%{ opacity:1; }
+      100%{ transform:translateY(-60px) scale(1.2); opacity:0; }
+    }
+
+    .toast{ position:fixed; inset:auto 0 18px 0; display:flex; justify-content:center; pointer-events:none; }
+    .toast > div{ background:rgba(17,24,39,.9); border:1px solid rgba(255,255,255,.1); color:var(--fg); padding:10px 14px; border-radius:12px; font-size:13px; }
   </style>
 </head>
 <body>
   <div class="app">
     <div class="card">
       <header>
-        <h1>🫧 Pet the Sheep</h1>
+        <h1>🌙 Pet the Sheep</h1>
         <div class="buttons">
           <button id="muteBtn" aria-pressed="false" title="Sound on/off">🔈</button>
           <button id="resetBtn" title="Reset progress">↺</button>
         </div>
       </header>
+
       <div style="padding:0 16px 10px">
         <div class="meter" aria-label="Happiness meter" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
           <div class="bar" id="bar"></div>
         </div>
       </div>
+
       <div class="play" id="play">
         <div class="sheep" id="sheep" aria-label="Sheep" role="img">🐑</div>
-        <div class="hint">Swipe over the sheep to pet. Fill the meter for stars ✨</div>
+        <div class="hint">Swipe over the sheep to pet. Fill the meter for a happy baa ✨</div>
       </div>
+
       <div class="hud">
         <div class="pill">Pets: <span id="pets">0</span></div>
         <div class="pill">Best streak: <span id="best">0</span></div>
       </div>
     </div>
   </div>
-  <div class="toast" id="toast" style="display:none"><div></div></div>
 
-  <audio id="chime" preload="auto">
-    <source src="data:audio/wav;base64,UklGRhQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABYAAAAAAAB/////AAAAAP///wAAAP///wAA" type="audio/wav">
-  </audio>
+  <!-- Your sound file; put baa.mp3 in the repo root (same folder as index.html) -->
+  <audio id="chime" preload="auto" playsinline src="baa.mp3"></audio>
+
+  <div class="toast" id="toast" style="display:none"><div></div></div>
 
 <script>
 (function(){
-  const play = document.getElementById('play');
+  const play  = document.getElementById('play');
   const sheep = document.getElementById('sheep');
-  const bar = document.getElementById('bar');
-  const petsEl = document.getElementById('pets');
-  const bestEl = document.getElementById('best');
-  const chime = document.getElementById('chime');
+  const bar   = document.getElementById('bar');
+  const petsEl= document.getElementById('pets');
+  const bestEl= document.getElementById('best');
   const muteBtn = document.getElementById('muteBtn');
-  const resetBtn = document.getElementById('resetBtn');
+  const resetBtn= document.getElementById('resetBtn');
   const toast = document.getElementById('toast');
 
   // Persistent state
@@ -120,124 +148,163 @@ body {
   bestEl.textContent = best; petsEl.textContent = totalPets; updateMuteIcon();
 
   // Petting mechanics
-  let progress = 0; // 0..100
+  let progress = 0; // 0..100 visual meter
   let petting = false;
   let lastX = 0, lastY = 0;
-  let distanceOnSheep = 0; // increases when finger moves over sheep
-  const PET_DISTANCE_FOR_REWARD = 180; // px of movement on sheep to earn reward
+  let distanceOnSheep = 0; // distance since last reward
+  const PET_DISTANCE_FOR_REWARD = 250; // px of movement to spawn particles/reward tick
 
-  function clamp(v,min,max){return Math.max(min,Math.min(max,v));}
-  function vibrate(ms){ if (navigator.vibrate) try{navigator.vibrate(ms)}catch(e){} }
-  function playSound(){ if(!muted){ try{ chime.currentTime = 0; chime.play(); }catch(e){} } }
+  function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
+  function vibrate(ms){ if (navigator.vibrate) try{ navigator.vibrate(ms); }catch(e){} }
   function showToast(msg){ toast.style.display='flex'; toast.firstElementChild.textContent=msg; setTimeout(()=>toast.style.display='none', 1200); }
+
+  function updateMuteIcon(){ muteBtn.textContent = muted ? '🔇' : '🔈'; muteBtn.setAttribute('aria-pressed', muted ? 'true' : 'false'); }
+
+  function setProgress(p){
+    progress = clamp(p,0,100);
+    bar.style.width = progress + '%';
+    bar.parentElement.setAttribute('aria-valuenow', String(Math.round(progress)));
+  }
 
   function inSheep(x,y){
     const r = sheep.getBoundingClientRect();
-    const pad = 10;
+    const pad = 10; // a tiny forgiving padding
     return (x >= r.left-pad && x <= r.right+pad && y >= r.top-pad && y <= r.bottom+pad);
   }
-  function spawnStar(x,y){
-    const el = document.createElement('div');
-    el.className='star';
-    el.textContent = Math.random()<0.5 ? '⭐' : '✨';
-    el.style.left = (x-12)+'px';
-    el.style.top = (y-12)+'px';
-    play.appendChild(el);
-    el.addEventListener('animationend', ()=> el.remove());
+
+function spawnStar(x, y){
+  const rect = play.getBoundingClientRect();
+  const el = document.createElement('div');
+  el.className = 'star';
+  el.textContent = Math.random() < 0.5 ? '⭐' : '✨';
+  el.style.left = (x - rect.left - 12) + 'px';  // <-- convert to local coords
+  el.style.top  = (y - rect.top  - 12) + 'px';
+  play.appendChild(el);
+  el.addEventListener('animationend', () => el.remove());
+}
+
+function spawnHeart(x, y){
+  const rect = play.getBoundingClientRect();
+  const el = document.createElement('div');
+  el.className = 'heart';
+  el.textContent = '❤';
+  el.style.left = (x - rect.left - 10) + 'px';   // <-- convert to local coords
+  el.style.top  = (y - rect.top  - 10) + 'px';
+  play.appendChild(el);
+  el.addEventListener('animationend', () => el.remove());
+}
+
+
+  function playSound(){
+    if (muted) return;
+    const el = document.getElementById('chime');
+    if (!el) return;
+    try{
+      el.currentTime = 0;
+      const p = el.play();
+      if (p && typeof p.then === 'function') { p.catch(()=>{}); }
+    }catch(e){}
   }
-  function spawnHeart(x,y){
-    const el = document.createElement('div');
-    el.className='heart';
-    el.textContent = '❤';
-    el.style.left = (x-10)+'px';
-    el.style.top = (y-10)+'px';
-    play.appendChild(el);
-    el.addEventListener('animationend', ()=> el.remove());
-  }
-  function setProgress(p){
-    progress = clamp(p,0,100);
-    bar.style.width = progress+'%';
-    bar.parentElement.setAttribute('aria-valuenow', String(Math.round(progress)));
-  }
+
   function reward(x,y){
-    // Triggered when enough pet distance accumulates
-    for(let i=0;i<3;i++) setTimeout(()=>spawnStar(x + (Math.random()*40-20), y + (Math.random()*30-15)), i*80);
+    // Visual particles for each reward tick
+    for(let i=0;i<3;i++){
+      setTimeout(()=>spawnStar(x + (Math.random()*40-20), y + (Math.random()*30-15)), i*80);
+    }
     spawnHeart(x,y);
     vibrate(10);
-    playSound();
-    totalPets++; petsEl.textContent = totalPets; localStorage.setItem('sheep_total', String(totalPets));
 
-    // Streak logic: filling meter to 100% counts as a streak
-    if(progress>=100){
+    totalPets++;
+    petsEl.textContent = totalPets;
+    localStorage.setItem('sheep_total', String(totalPets));
+
+    // Only baa and reset when meter is full
+    if (progress >= 100){
+      playSound();
       best = Math.max(best, totalPets);
-      bestEl.textContent = best; localStorage.setItem('sheep_best', String(best));
+      bestEl.textContent = best;
+      localStorage.setItem('sheep_best', String(best));
       showToast('Sheep is happy! 💫');
       setProgress(0);
     }
   }
 
   function onStart(ev){
+    // Prime audio on first user gesture (iOS autoplay policy)
+    try{
+      const el = document.getElementById('chime');
+      if (el && !window.__audioPrimed && !muted){
+        const p = el.play();
+        if (p && typeof p.then === 'function'){
+          p.then(()=>{ el.pause(); el.currentTime = 0; window.__audioPrimed = true; }).catch(()=>{});
+        } else {
+          window.__audioPrimed = true;
+        }
+      }
+    }catch(e){}
+
     petting = true;
-    const p = getPoint(ev);
-    lastX = p.x; lastY = p.y; distanceOnSheep = 0;
+    const pt = getPoint(ev);
+    lastX = pt.x; lastY = pt.y; distanceOnSheep = 0;
     sheep.style.transform='scale(1.03)';
-    ev.preventDefault();
+    if (ev.cancelable) ev.preventDefault();
   }
+
   function onMove(ev){
     if(!petting) return;
-    const p = getPoint(ev);
-    const dx = p.x - lastX; const dy = p.y - lastY;
+    const pt = getPoint(ev);
+    const dx = pt.x - lastX, dy = pt.y - lastY;
     const dist = Math.hypot(dx,dy);
-    if(inSheep(p.x,p.y)){
+
+    if (inSheep(pt.x, pt.y)){
       distanceOnSheep += dist;
-      const inc = dist*0.2; // tune difficulty
+
+      // Adjust fill speed here (you liked 0.05)
+      const inc = dist * 0.05;
       setProgress(progress + inc);
-      if(distanceOnSheep >= PET_DISTANCE_FOR_REWARD){
+
+      if (distanceOnSheep >= PET_DISTANCE_FOR_REWARD){
         distanceOnSheep = 0;
-        reward(p.x,p.y);
+        reward(pt.x, pt.y);
       }
-      // Tiny squish
       sheep.style.transform='scale(1.04)';
     } else {
       sheep.style.transform='scale(1.0)';
     }
-    lastX = p.x; lastY = p.y;
-    ev.preventDefault();
+
+    lastX = pt.x; lastY = pt.y;
+    if (ev.cancelable) ev.preventDefault();
   }
+
   function onEnd(){
-    petting = false; sheep.style.transform='scale(1.0)';
+    petting = false;
+    sheep.style.transform='scale(1.0)';
   }
 
   function getPoint(ev){
-    if(ev.touches && ev.touches[0]) return {x:ev.touches[0].clientX, y:ev.touches[0].clientY};
-    return {x:ev.clientX, y:ev.clientY};
+    if (ev.touches && ev.touches[0]) return { x:ev.touches[0].clientX, y:ev.touches[0].clientY };
+    return { x:ev.clientX, y:ev.clientY };
   }
 
-  // Events
-  play.addEventListener('touchstart', onStart, {passive:false});
-  play.addEventListener('touchmove', onMove, {passive:false});
-  play.addEventListener('touchend', onEnd);
-  play.addEventListener('mousedown', onStart);
-  play.addEventListener('mousemove', onMove);
-  window.addEventListener('mouseup', onEnd);
+  // Events (note passive:false so preventDefault works on iOS)
+  play.addEventListener('touchstart', onStart, { passive:false });
+  play.addEventListener('touchmove',  onMove,  { passive:false });
+  play.addEventListener('touchend',   onEnd);
+  play.addEventListener('mousedown',  onStart);
+  play.addEventListener('mousemove',  onMove);
+  window.addEventListener('mouseup',  onEnd);
 
   // Buttons
-  muteBtn.addEventListener('click', ()=>{ muted = !muted; localStorage.setItem('sheep_muted', muted?'1':'0'); updateMuteIcon(); });
-  resetBtn.addEventListener('click', ()=>{ totalPets=0; best=0; setProgress(0); petsEl.textContent='0'; bestEl.textContent='0'; localStorage.removeItem('sheep_total'); localStorage.removeItem('sheep_best'); showToast('Reset!'); });
-  function updateMuteIcon(){ muteBtn.textContent = muted? '🔇' : '🔈'; muteBtn.setAttribute('aria-pressed', muted?'true':'false'); }
-
-  // Resize hint: keep sheep roughly centered spacing on very small screens
-  const ro = new ResizeObserver(()=>{
-    // no-op; layout is responsive via flex
+  muteBtn.addEventListener('click', ()=>{
+    muted = !muted; localStorage.setItem('sheep_muted', muted?'1':'0'); updateMuteIcon();
   });
-  ro.observe(play);
+  resetBtn.addEventListener('click', ()=>{
+    totalPets=0; best=0; setProgress(0);
+    petsEl.textContent='0'; bestEl.textContent='0';
+    localStorage.removeItem('sheep_total'); localStorage.removeItem('sheep_best');
+    showToast('Reset!');
+  });
 })();
 </script>
 </body>
 </html>
-
-
-
-
-
-
